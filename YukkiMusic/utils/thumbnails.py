@@ -17,7 +17,7 @@ def changeImageSize(maxWidth, maxHeight, image):
     newImage = image.resize((newWidth, newHeight))
     return newImage
 
-async def gen_thumb(videoid, music_slider=False, slider_progress=0.0, slider_color=(255, 0, 0)):
+async def gen_thumb(videoid, music_slider=False):
     if os.path.isfile(f"cache/{videoid}.png"):
         return f"cache/{videoid}.png"
 
@@ -131,21 +131,16 @@ async def gen_thumb(videoid, music_slider=False, slider_progress=0.0, slider_col
 
         # Draw the music slider.
         if music_slider:
-            # Create a new canvas image.
-            canvas = Image.new("RGBA", background.size, (0, 0, 0, 0))
+            background_width, background_height = background.size
+            slider_width = int(background_width * 0.7)
+            slider_height = 20
+            slider_x = int((background_width - slider_width) * 0.5)
+            slider_y = background_height - slider_height - 20
 
-            # Calculate the slider position based on the progress.
-            slider_x = int(100 + (1000 * slider_progress))
-
-            # Draw a rectangle on the canvas image.
-            draw = ImageDraw.Draw(canvas)
-            draw.rectangle((100, 600, slider_x, 650), fill=slider_color)
-
-            # Draw a circle on the canvas image.
-            draw.ellipse((slider_x - 25, 625, slider_x + 25, 675), fill=slider_color)
-
-            # Paste the canvas image onto the background image.
-            background.paste(canvas, (0, 0), mask=canvas)
+            draw.rectangle(
+                [(slider_x, slider_y), (slider_x + slider_width, slider_y + slider_height)],
+                fill=(255, 0, 0),  # You can adjust the slider color here.
+            )
 
         try:
             os.remove(f"cache/thumb{videoid}.png")
