@@ -139,13 +139,13 @@ async def gen_thumb(videoid, music_slider=False, slider_position=0.5):
 
             # Slider bar
             draw.rectangle(
-                [(0, slider_y), (background_width, slider_y + slider_height)],
+                [(slider_x, slider_y), (slider_x + slider_width, slider_y + slider_height)],
                 fill=(128, 128, 128, 128),  # Gray color for slider bar
             )
 
             # Slider position indicator
             draw.rectangle(
-                [(slider_x, slider_y), (slider_x + slider_width, slider_y + slider_height)],
+                [(slider_x, slider_y), (slider_x + slider_width * slider_position, slider_y + slider_height)],
                 fill=(255, 0, 0),  # Red color for slider indicator
             )
 
