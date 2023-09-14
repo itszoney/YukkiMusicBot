@@ -1,12 +1,3 @@
-#
-# Copyright (C) 2021-2022 by TeamYukki@Github, < https://github.com/TeamYukki >.
-#
-# This file is part of < https://github.com/TeamYukki/YukkiMusicBot > project,
-# and is released under the "GNU v3.0 License Agreement".
-# Please see < https://github.com/TeamYukki/YukkiMusicBot/blob/master/LICENSE >
-#
-# All rights reserved.
-
 import os
 import re
 import textwrap
@@ -29,7 +20,7 @@ def changeImageSize(maxWidth, maxHeight, image):
     return newImage
 
 
-async def gen_thumb(videoid):
+async def gen_thumb(videoid, music_slider=False):
     if os.path.isfile(f"cache/{videoid}.png"):
         return f"cache/{videoid}.png"
 
@@ -110,7 +101,7 @@ async def gen_thumb(videoid):
                     stroke_width=1,
                     stroke_fill="white",
                     font=font,
-                )
+                                )
             if j == 0:
                 j += 1
                 draw.text(
@@ -140,6 +131,22 @@ async def gen_thumb(videoid):
             (255, 255, 255),
             font=arial,
         )
+
+        # Draw the music slider.
+        if music_slider:
+            # Create a new canvas image.
+            canvas = Image.new("RGBA", background.size, (0, 0, 0, 0))
+
+            # Draw a rectangle on the canvas image.
+            draw = ImageDraw.Draw(canvas)
+            draw.rectangle((100, 600, 1100, 650), fill=(255, 255, 255, 200))
+
+            # Draw a circle on the canvas image.
+            draw.ellipse((500, 625, 550, 675), fill=(255, 255, 255, 255))
+
+            # Paste the canvas image onto the background image.
+            background.paste(canvas, (0, 0), mask=canvas)
+
         try:
             os.remove(f"cache/thumb{videoid}.png")
         except:
@@ -148,3 +155,5 @@ async def gen_thumb(videoid):
         return f"cache/{videoid}.png"
     except Exception:
         return YOUTUBE_IMG_URL
+
+                
