@@ -17,7 +17,7 @@ def changeImageSize(maxWidth, maxHeight, image):
     newImage = image.resize((newWidth, newHeight))
     return newImage
 
-async def gen_thumb(videoid, music_slider=False, slider_position=0.5):
+async def gen_thumb(videoid, music_slider=False):
     if os.path.isfile(f"cache/{videoid}.png"):
         return f"cache/{videoid}.png"
 
@@ -62,69 +62,44 @@ async def gen_thumb(videoid, music_slider=False, slider_position=0.5):
         background = enhancer.enhance(0.6)
         Xcenter = youtube.width / 2
         Ycenter = youtube.height / 2
-        x1 = Xcenter - 250
-        y1 = Ycenter - 250
-        x2 = Xcenter + 250
-        y2 = Ycenter + 250
+        x1 = Xcenter - 150
+        y1 = Ycenter - 150
+        x2 = Xcenter + 150
+        y2 = Ycenter + 150
         logo = youtube.crop((x1, y1, x2, y2))
-        logo.thumbnail((520, 520), Image.ANTIALIAS)
+        logo.thumbnail((260, 260), Image.ANTIALIAS)
         logo = ImageOps.expand(logo, border=15, fill="white")
         background.paste(logo, (50, 100))
         draw = ImageDraw.Draw(background)
-        font = ImageFont.truetype("assets/font2.ttf", 40)
-        font2 = ImageFont.truetype("assets/font2.ttf", 70)
-        arial = ImageFont.truetype("assets/font2.ttf", 30)
-        name_font = ImageFont.truetype("assets/font.ttf", 30)
-        para = textwrap.wrap(title, width=32)
+        font = ImageFont.truetype("assets/font2.ttf", 30)
+        arial = ImageFont.truetype("assets/font2.ttf", 20)
+        name_font = ImageFont.truetype("assets/font.ttf", 20)
+        para = textwrap.wrap(title, width=24)
         j = 0
         draw.text(
             (5, 5), f"{MUSIC_BOT_NAME}", fill="white", font=name_font
         )
-        draw.text(
-            (600, 150),
-            "NOW PLAYING",
-            fill="white",
-            stroke_width=2,
-            stroke_fill="white",
-            font=font2,
-        )
+
+        # Position for song title and views
+        title_x = 50
+        title_y = 380
+        views_x = 50
+        views_y = 420
+
         for line in para:
-            if j == 1:
-                j += 1
-                draw.text(
-                    (600, 340),
-                    f"{line}",
-                    fill="white",
-                    stroke_width=1,
-                    stroke_fill="white",
-                    font=font,
-                )
-            if j == 0:
-                j += 1
-                draw.text(
-                    (600, 280),
-                    f"{line}",
-                    fill="white",
-                    stroke_width=1,
-                    stroke_fill="white",
-                    font=font,
-                )
+            draw.text(
+                (title_x, title_y),
+                f"{line}",
+                fill="white",
+                stroke_width=1,
+                stroke_fill="white",
+                font=font,
+            )
+            title_y += 30
 
         draw.text(
-            (600, 450),
+            (views_x, views_y),
             f"Views : {views[:23]}",
-            (255, 255, 255),
-            font=arial,
-        )
-        draw.text(
-            (600, 500),
-            f"Duration : {duration[:23]} Mins",
-            (255, 255, 255),
-            font=arial,
-        )
-        draw.text(
-            (600, 550),
-            f"Channel : {channel}",
             (255, 255, 255),
             font=arial,
         )
