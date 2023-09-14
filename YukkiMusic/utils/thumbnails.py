@@ -1,13 +1,15 @@
 import os
 import re
 import textwrap
+
 import aiofiles
 import aiohttp
 from PIL import (Image, ImageDraw, ImageEnhance, ImageFilter,
-                 ImageFont, ImageOps, ImageChops)
+                 ImageFont, ImageOps)
 from youtubesearchpython.__future__ import VideosSearch
 
 from config import MUSIC_BOT_NAME, YOUTUBE_IMG_URL
+
 
 def changeImageSize(maxWidth, maxHeight, image):
     widthRatio = maxWidth / image.size[0]
@@ -17,7 +19,8 @@ def changeImageSize(maxWidth, maxHeight, image):
     newImage = image.resize((newWidth, newHeight))
     return newImage
 
-async def gen_thumb(videoid, music_slider=False):
+
+async def gen_thumb(videoid):
     if os.path.isfile(f"cache/{videoid}.png"):
         return f"cache/{videoid}.png"
 
@@ -62,56 +65,87 @@ async def gen_thumb(videoid, music_slider=False):
         background = enhancer.enhance(0.6)
         Xcenter = youtube.width / 2
         Ycenter = youtube.height / 2
-        x1 = Xcenter - 150
-        y1 = Ycenter - 150
-        x2 = Xcenter + 150
-        y2 = Ycenter + 150
+        x1 = Xcenter - 250
+        y1 = Ycenter - 250
+        x2 = Xcenter + 250
+        y2 = Ycenter + 250
         logo = youtube.crop((x1, y1, x2, y2))
-        logo = logo.resize((130, 130))
-        logo = ImageOps.circle(logo, outline="white", width=10)
-        background.paste(logo, (20, 300))
+        logo.thumbnail((420, 420), Image.ANTIALIAS)
+        logo = ImageOps.expand(logo, border=15, fill="white")
+        background.paste(logo, (50, 100))
         draw = ImageDraw.Draw(background)
-        font = ImageFont.truetype("assets/font2.ttf", 20)
-        arial = ImageFont.truetype("assets/font2.ttf", 15)
-        name_font = ImageFont.truetype("assets/font.ttf", 20)
+        font = ImageFont.truetype("assets/font2.ttf", 40)
+        font2 = ImageFont.truetype("assets/font2.ttf", 70)
+        arial = ImageFont.truetype("assets/font2.ttf", 30)
+        name_font = ImageFont.truetype("assets/font.ttf", 30)
         para = textwrap.wrap(title, width=24)
-
-        # Position for song title and views
-        title_x = 180
-        title_y = 320
-        views_x = 180
-        views_y = 350
-
+        j = 0
+        draw.text(
+            (5, 5), f"{MUSIC_BOT_NAME}", fill="white", font=name_font
+        )
+        draw.text(
+            (600, 150),
+            "NOW PLAYING",
+            fill="white",
+            stroke_width=2,
+            stroke_fill="white",
+            font=font2,
+        )
         for line in para:
-            draw.text(
-                (title_x, title_y),
-                f"{line}",
-                fill="white",
-                stroke_width=1,
-                stroke_fill="white",
-                font=font,
-            )
-            title_y += 25
+            if j == 1:
+                j += 1
+                draw.text(
+                    (600, 340),
+                    f"{line}",
+                    fill="white",
+                    stroke_width=1,
+                    stroke_fill="white",
+                    font=font,
+                )
+            if j == 0:
+                j += 1
+                draw.text(
+                    (600, 280),
+                    f"{line}",
+                    fill="white",
+                    stroke_width=1,
+                    stroke_fill="white",
+                    font=font,
+                )
 
         draw.text(
-            (views_x, views_y),
+            (600, 450),
             f"Views : {views[:23]}",
             (255, 255, 255),
             font=arial,
         )
+        draw.text(
+            (600, 500),
+            f"Duration : {duration[:23]} Mins",
+            (255, 255, 255),
+            font=arial,
+        )
+        draw.text(
+            (600, 550),
+            f"Channel : {channel}",
+            (255, 255, 255),
+            font=arial,
+        )
 
-        # Draw the music slider.
-        if music_slider:
-            slider_img = Image.open("assets/slider.png")
-            slider_img = slider_img.convert("RGBA")
-            slider_img = slider_img.resize((background.width, 20))
-            background.paste(slider_img, (0, background.height - 20), mask=slider_img)
+        # Additional Features: Add a play button overlay and music note symbols.
+        play_button = Image.open("assets/play_button.png")
+        music_notes = Image.open("assets/music_notes.png")
+
+        # Resize and position the play button and music notes.
+        play_button = play_button.resize((100, 100))
+        music_notes = music_notes.resize((150, 150))
+        background.paste(play_button, (800, 400), play_button)
+        background.paste(music_notes, (900, 550), music_notes)
 
         try:
             os.remove(f"cache/thumb{videoid}.png")
         except:
             pass
-
         background.save(f"cache/{videoid}.png")
         return f"cache/{videoid}.png"
     except Exception:
