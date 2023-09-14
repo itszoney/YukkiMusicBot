@@ -343,7 +343,7 @@ class YouTubeAPI:
                 "postprocessors": [
                     {
                         "key": "FFmpegExtractAudio",
-                        "preferredcodec": "flac"
+                        "preferredcodec": "flac",
                         "preferredquality": "320",
                     }
                 ],
