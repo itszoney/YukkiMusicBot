@@ -131,23 +131,10 @@ async def gen_thumb(videoid, music_slider=False, slider_position=0.5):
 
         # Draw the music slider.
         if music_slider:
-            background_width, background_height = background.size
-            slider_width = int(background_width * 0.7)
-            slider_height = 20
-            slider_x = int((background_width - slider_width) * slider_position)
-            slider_y = background_height - slider_height - 20
-
-            # Slider bar
-            draw.rectangle(
-                [(slider_x, slider_y), (slider_x + slider_width, slider_y + slider_height)],
-                fill=(128, 128, 128, 128),  # Gray color for slider bar
-            )
-
-            # Slider position indicator
-            draw.rectangle(
-                [(slider_x, slider_y), (slider_x + slider_width * slider_position, slider_y + slider_height)],
-                fill=(255, 0, 0),  # Red color for slider indicator
-            )
+            slider_img = Image.open("assets/slider.png")
+            slider_img = slider_img.convert("RGBA")
+            slider_img = slider_img.resize((background.width, 20))
+            background.paste(slider_img, (0, background.height - 20), mask=slider_img)
 
         try:
             os.remove(f"cache/thumb{videoid}.png")
