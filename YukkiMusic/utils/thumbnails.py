@@ -132,16 +132,6 @@ async def gen_thumb(videoid):
             font=arial,
         )
 
-        # Additional Features: Add a play button overlay and music note symbols.
-        play_button = Image.open("assets/play_button.png")
-        music_notes = Image.open("assets/music_notes.png")
-
-        # Resize and position the play button and music notes.
-        play_button = play_button.resize((100, 100))
-        music_notes = music_notes.resize((150, 150))
-        background.paste(play_button, (800, 400), play_button)
-        background.paste(music_notes, (900, 550), music_notes)
-
         try:
             os.remove(f"cache/thumb{videoid}.png")
         except:
