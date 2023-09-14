@@ -1,7 +1,6 @@
 import os
 import re
 import textwrap
-
 import aiofiles
 import aiohttp
 from PIL import (Image, ImageDraw, ImageEnhance, ImageFilter,
@@ -9,7 +8,6 @@ from PIL import (Image, ImageDraw, ImageEnhance, ImageFilter,
 from youtubesearchpython.__future__ import VideosSearch
 
 from config import MUSIC_BOT_NAME, YOUTUBE_IMG_URL
-
 
 def changeImageSize(maxWidth, maxHeight, image):
     widthRatio = maxWidth / image.size[0]
@@ -19,8 +17,7 @@ def changeImageSize(maxWidth, maxHeight, image):
     newImage = image.resize((newWidth, newHeight))
     return newImage
 
-
-async def gen_thumb(videoid, music_slider=False):
+async def gen_thumb(videoid, music_slider=False, slider_progress=0.0, slider_color=(255, 0, 0)):
     if os.path.isfile(f"cache/{videoid}.png"):
         return f"cache/{videoid}.png"
 
@@ -101,7 +98,7 @@ async def gen_thumb(videoid, music_slider=False):
                     stroke_width=1,
                     stroke_fill="white",
                     font=font,
-                                )
+                )
             if j == 0:
                 j += 1
                 draw.text(
@@ -137,12 +134,15 @@ async def gen_thumb(videoid, music_slider=False):
             # Create a new canvas image.
             canvas = Image.new("RGBA", background.size, (0, 0, 0, 0))
 
+            # Calculate the slider position based on the progress.
+            slider_x = int(100 + (1000 * slider_progress))
+
             # Draw a rectangle on the canvas image.
             draw = ImageDraw.Draw(canvas)
-            draw.rectangle((100, 600, 1100, 650), fill=(255, 255, 255, 200))
+            draw.rectangle((100, 600, slider_x, 650), fill=slider_color)
 
             # Draw a circle on the canvas image.
-            draw.ellipse((500, 625, 550, 675), fill=(255, 255, 255, 255))
+            draw.ellipse((slider_x - 25, 625, slider_x + 25, 675), fill=slider_color)
 
             # Paste the canvas image onto the background image.
             background.paste(canvas, (0, 0), mask=canvas)
@@ -155,5 +155,3 @@ async def gen_thumb(videoid, music_slider=False):
         return f"cache/{videoid}.png"
     except Exception:
         return YOUTUBE_IMG_URL
-
-                
