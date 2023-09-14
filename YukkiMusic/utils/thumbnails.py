@@ -4,7 +4,7 @@ import textwrap
 import aiofiles
 import aiohttp
 from PIL import (Image, ImageDraw, ImageEnhance, ImageFilter,
-                 ImageFont, ImageOps)
+                 ImageFont, ImageOps, ImageChops)
 from youtubesearchpython.__future__ import VideosSearch
 
 from config import MUSIC_BOT_NAME, YOUTUBE_IMG_URL
@@ -67,24 +67,20 @@ async def gen_thumb(videoid, music_slider=False):
         x2 = Xcenter + 150
         y2 = Ycenter + 150
         logo = youtube.crop((x1, y1, x2, y2))
-        logo.thumbnail((260, 260), Image.ANTIALIAS)
-        logo = ImageOps.expand(logo, border=15, fill="white")
-        background.paste(logo, (50, 100))
+        logo = logo.resize((130, 130))
+        logo = ImageOps.circle(logo, outline="white", width=10)
+        background.paste(logo, (20, 300))
         draw = ImageDraw.Draw(background)
-        font = ImageFont.truetype("assets/font2.ttf", 30)
-        arial = ImageFont.truetype("assets/font2.ttf", 20)
+        font = ImageFont.truetype("assets/font2.ttf", 20)
+        arial = ImageFont.truetype("assets/font2.ttf", 15)
         name_font = ImageFont.truetype("assets/font.ttf", 20)
         para = textwrap.wrap(title, width=24)
-        j = 0
-        draw.text(
-            (5, 5), f"{MUSIC_BOT_NAME}", fill="white", font=name_font
-        )
 
         # Position for song title and views
-        title_x = 50
-        title_y = 380
-        views_x = 50
-        views_y = 420
+        title_x = 180
+        title_y = 320
+        views_x = 180
+        views_y = 350
 
         for line in para:
             draw.text(
@@ -95,7 +91,7 @@ async def gen_thumb(videoid, music_slider=False):
                 stroke_fill="white",
                 font=font,
             )
-            title_y += 30
+            title_y += 25
 
         draw.text(
             (views_x, views_y),
@@ -115,6 +111,7 @@ async def gen_thumb(videoid, music_slider=False):
             os.remove(f"cache/thumb{videoid}.png")
         except:
             pass
+
         background.save(f"cache/{videoid}.png")
         return f"cache/{videoid}.png"
     except Exception:
