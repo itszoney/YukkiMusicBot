@@ -6,7 +6,6 @@ import aiohttp
 from PIL import (Image, ImageDraw, ImageEnhance, ImageFilter,
                  ImageFont, ImageOps)
 from youtubesearchpython.__future__ import VideosSearch
-import numpy as np
 
 from config import MUSIC_BOT_NAME, YOUTUBE_IMG_URL
 
@@ -18,7 +17,7 @@ def changeImageSize(maxWidth, maxHeight, image):
     newImage = image.resize((newWidth, newHeight))
     return newImage
 
-async def gen_thumb(videoid, music_slider=False):
+async def gen_thumb(videoid, music_slider=False, slider_position=0.5):
     if os.path.isfile(f"cache/{videoid}.png"):
         return f"cache/{videoid}.png"
 
@@ -135,12 +134,19 @@ async def gen_thumb(videoid, music_slider=False):
             background_width, background_height = background.size
             slider_width = int(background_width * 0.7)
             slider_height = 20
-            slider_x = int((background_width - slider_width) * 0.5)
+            slider_x = int((background_width - slider_width) * slider_position)
             slider_y = background_height - slider_height - 20
 
+            # Slider bar
+            draw.rectangle(
+                [(0, slider_y), (background_width, slider_y + slider_height)],
+                fill=(128, 128, 128, 128),  # Gray color for slider bar
+            )
+
+            # Slider position indicator
             draw.rectangle(
                 [(slider_x, slider_y), (slider_x + slider_width, slider_y + slider_height)],
-                fill=(255, 0, 0),  # You can adjust the slider color here.
+                fill=(255, 0, 0),  # Red color for slider indicator
             )
 
         try:
